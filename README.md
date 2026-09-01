@@ -75,6 +75,12 @@ Run the commands in order — each builds on the previous one.
 - The generated project lives in a subfolder of this repo, so the demo commands and the app share one git history.
 - `/demo-4-artifact` needs an account with artifacts enabled; skip it if publishing is unavailable.
 
+## Links
+
+- [Headless Xcode: from prompt to simulator with MCP](https://artemnovichkov.com/blog/headless-xcode-from-prompt-to-simulator-with-mcp) — the same path, in text
+- [xcode-tools-docs](https://github.com/artemnovichkov/xcode-tools-docs) — reference for the Xcode MCP tools, the part that isn't in the docs
+- [xcode-skills](https://github.com/artemnovichkov/xcode-skills) — Xcode 27 agent skills packaged as a Claude Code plugin
+
 ## Author
 
 Artem Novichkov, https://artemnovichkov.com
