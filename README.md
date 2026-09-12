@@ -12,7 +12,7 @@ The Xcode MCP server and Apple's skills are **not** committed — you add them i
 
 ## Requirements
 
-- macOS with **Xcode 27** or newer (it ships `xcrun mcpbridge` and the skills) and an iOS simulator installed
+- macOS with **Xcode 27 RC** or newer (it ships `xcrun mcpbridge`, headless mode and the skills) and an iOS simulator installed
 - [Claude Code](https://claude.com/claude-code) `v2.1` or newer
 - [GitHub CLI](https://cli.github.com) (`gh`), authenticated — needed for the last step
 
@@ -20,16 +20,18 @@ The Xcode MCP server and Apple's skills are **not** committed — you add them i
 
 1. Click **Use this template** on GitHub, then clone your copy and `cd` into it.
 
-2. Make sure the right Xcode is active, then enable and start its MCP server:
+2. Make sure the right Xcode is active, then turn on headless mode:
 
    ```sh
    xcode-select -p                 # should point at the Xcode you want (e.g. Xcode-beta.app)
    sudo xcrun mcp-server enable    # one-time, asks for your password
-   xcrun mcp-server start
-   xcrun mcp-server status         # Permission: enabled / mcp-server: running
+   xcrun mcp-server status
    ```
 
    Switch Xcode with `sudo xcode-select -s /Applications/Xcode-beta.app` if the path is wrong.
+
+   The server launches on demand the first time an agent connects — until then `status` prints
+   `mcp-server: not running`, and that's fine.
 
 3. Register the server with Claude Code — build, run, render previews, drive the simulator:
 
@@ -37,15 +39,17 @@ The Xcode MCP server and Apple's skills are **not** committed — you add them i
    claude mcp add --scope project xcode -- xcrun mcpbridge
    ```
 
-   This writes `.mcp.json` in the repo root.
+   This writes `.mcp.json` in the repo root. Headless mode exposes 54 tools; check with
+   `claude mcp list`.
 
 4. Export Apple's official Swift/SwiftUI skills from Xcode (SwiftUI, App Intents, testing, UIKit modernization, security audit — 10 in total):
 
    ```sh
-   xcrun agent skills export --output-dir .claude/skills
+   xcrun agent skills export --output-dir "$PWD/.claude/skills"
    ```
 
-   First run launches Xcode to pull them out; it takes a moment.
+   The path must be **absolute** — a relative `--output-dir` is resolved against `/` and fails
+   with a read-only volume error. First run launches Xcode to pull the skills out; it takes a moment.
 
 5. Run `claude`, approve the `xcode` MCP server when prompted (`/mcp` shows its status), then type `/demo` and pick the first step.
 
@@ -74,6 +78,19 @@ Run the commands in order — each builds on the previous one.
 
 - The generated project lives in a subfolder of this repo, so the demo commands and the app share one git history.
 - `/demo-4-artifact` needs an account with artifacts enabled; skip it if publishing is unavailable.
+
+## Troubleshooting
+
+- **Builds hang or the agent sees no workspace** — `xcrun mcp-server status`. An unapproved
+  agent or folder shows up as a pending request; approve it with
+  `sudo xcrun mcp-server approve <id> --always`.
+- **"workspaceIdentifier is required"** — headless mode keeps workspaces open across sessions, so
+  more than one can be live at once. `xcrun mcp-server status` lists them; close the stale ones
+  (the agent has an `XcodeCloseWorkspace` tool) or tell it which project to work on.
+- **What did the agent actually do?** — `xcrun mcp-server show-logs` dumps the activity log and
+  prints its path.
+- **Start over** — `sudo xcrun mcp-server reset-all` wipes all permission state and shows the
+  onboarding again. `sudo xcrun mcp-server disable` turns headless mode off.
 
 ## Links
 
