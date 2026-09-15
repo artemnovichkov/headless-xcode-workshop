@@ -12,7 +12,7 @@ The Xcode MCP server and Apple's skills are **not** committed — you add them i
 
 ## Requirements
 
-- macOS with **Xcode 27 RC** or newer (it ships `xcrun mcpbridge`, headless mode and the skills) and an iOS simulator installed
+- macOS with **Xcode 27** or newer (it ships `xcrun mcpbridge`, headless mode and the skills) and an iOS simulator installed
 - [Claude Code](https://claude.com/claude-code) `v2.1` or newer
 - [GitHub CLI](https://cli.github.com) (`gh`), authenticated — needed for the last step
 
